@@ -1,0 +1,7 @@
+name: wing
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - ffmpeg=4.4

@@ -1,0 +1,82 @@
+# Shared official RoboCasa-GR1 24-task dataset definition. Keep this order
+# stable: VAE and latent action sidecars record dataset_index.
+dataset_dirs:
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PnPCupToDrawerClose_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PnPPotatoToMicrowaveClose_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PnPMilkToMicrowaveClose_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PnPBottleToCabinetClose_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PnPWineToCabinetClose_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PnPCanToDrawerClose_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromCuttingboardToBasketSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromCuttingboardToCardboardboxSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromCuttingboardToPanSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromCuttingboardToPotSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromCuttingboardToTieredbasketSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlacematToBasketSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlacematToBowlSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlacematToPlateSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlacematToTieredshelfSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlateToBowlSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlateToCardboardboxSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlateToPanSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromPlateToPlateSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromTrayToCardboardboxSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromTrayToPlateSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromTrayToPotSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromTrayToTieredbasketSplitA_GR1ArmsAndWaistFourierHands_1000
+  - ${oc.env:ROBOCASA_DATA_ROOT,datasets/robocasa-starvla}/gr1_unified.PosttrainPnPNovelFromTrayToTieredshelfSplitA_GR1ArmsAndWaistFourierHands_1000
+
+robot_dataset:
+  _target_: wing.datasets.lerobot.robot_video_dataset.RobotVideoDataset
+  dataset_dirs: ${data.dataset_dirs}
+  pretrained_norm_stats: ${oc.env:ROBOCASA_DATASET_STATS,artifacts/robocasa/dataset_stats.json}
+  shape_meta:
+    images:
+      - key: ego_view
+        raw_shape: [3, 256, 256]
+        shape: [3, 256, 256]
+    action:
+      - key: default
+        raw_shape: 44
+        shape: 44
+    state:
+      - key: default
+        raw_shape: 44
+        shape: 44
+  num_frames: 33
+  global_sample_stride: 1
+  action_video_freq_ratio: 4
+  video_size: [256, 256]
+  camera_key: null
+  val_set_proportion: 0.0
+  is_training_set: true
+  skip_padding_as_possible: false
+  concat_multi_camera: null
+  validate_episode_files: false
+  load_all_episodes_from_data_dir: true
+  override_instruction: null
+  processor:
+    _target_: wing.datasets.lerobot.processors.wing_processor.WINGProcessor
+    shape_meta: ${data.robot_dataset.shape_meta}
+    num_obs_steps: ${data.robot_dataset.num_frames}
+    num_output_cameras: 1
+    action_output_dim: 44
+    proprio_output_dim: 44
+    action_state_transforms: null
+    use_stepwise_action_norm: false
+    norm_default_mode: z-score
+    norm_exception_mode: null
+    action_state_merger:
+      _target_: wing.datasets.lerobot.transforms.action_state_merger.ConcatLeftAlign
+    train_transforms:
+      - _target_: wing.datasets.lerobot.transforms.image.ToTensor
+      - _target_: torchvision.transforms.Resize
+        size: [256, 256]
+    val_transforms:
+      - _target_: wing.datasets.lerobot.transforms.image.ToTensor
+      - _target_: torchvision.transforms.Resize
+        size: [256, 256]
+  text_embedding_cache_dir: ${oc.env:ROBOCASA_TEXT_CACHE,artifacts/robocasa/text_embeds_cache}
+  context_len: 128
+  vae_latent_cache_dir: ${oc.env:ROBOCASA_VAE_CACHE,''}
+  vae_latent_cache_required: false

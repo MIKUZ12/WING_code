@@ -1,0 +1,38 @@
+# @package _global_
+defaults:
+  - override /data: robotwin_lam
+  - override /model: wing
+  - _self_
+
+override_instruction: null
+training_phase: policy
+resume: null
+partial_resume: null
+phase_init:
+  path: ${oc.env:PHASE1_SPECTRAL_CHECKPOINT}
+
+batch_size: 16
+num_workers: 4
+learning_rate: 1.0e-4
+backbone_learning_rate: ${learning_rate}
+new_module_learning_rate: ${learning_rate}
+lr_scheduler_type: cosine
+weight_decay: 1.0e-2
+num_epochs: 5
+max_steps: null
+log_every: 10
+save_every: 2500
+eval_every: 0
+
+# The released local .pth VAE/T5 files are complete; avoid downloading a
+# second DiffSynth-converted copy during training or precomputation.
+model:
+  model_id: ${oc.env:WAN_MODEL_PATH,Wan-AI/Wan2.2-TI2V-5B}
+  tokenizer_model_id: ${oc.env:WAN_TOKENIZER_PATH,${model.model_id}}
+  action_dit_pretrained_path: ${oc.env:ACTION_DIT_CHECKPOINT}
+  redirect_common_files: false
+  spectral_plan:
+    normalization_stats_path: ${oc.env:ROBOTWIN_SPECTRAL_STATS}
+
+wandb:
+  name: wing_robotwin

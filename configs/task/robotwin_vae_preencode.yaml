@@ -1,0 +1,21 @@
+# @package _global_
+
+# Minimal RoboTwin config for offline Wan VAE pre-encoding.  Keep this job
+# independent of latent action caches, Phase-I checkpoints and training-only objectives.
+defaults:
+  - override /data: robotwin
+  - override /model: wing_joint
+  - _self_
+
+override_instruction: null
+
+# Use the released local Wan files instead of creating a second redirected
+# DiffSynth copy.  The pre-encoder only reads the model registry's VAE entry.
+model:
+  redirect_common_files: true
+
+wandb:
+  enabled: false
+
+tensorboard:
+  enabled: false

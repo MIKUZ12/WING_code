@@ -1,0 +1,21 @@
+# @package _global_
+defaults:
+  - override /data: libero_lam
+  - override /model: wing_joint
+  - _self_
+
+model:
+  model_id: ${oc.env:WAN_MODEL_PATH,Wan-AI/Wan2.2-TI2V-5B}
+  tokenizer_model_id: ${oc.env:WAN_TOKENIZER_PATH,${model.model_id}}
+  redirect_common_files: false
+  proprio_dim: 8
+  video_dit_config:
+    action_dim: 7
+  action_dit_config:
+    action_dim: 7
+
+wandb:
+  enabled: false
+
+tensorboard:
+  enabled: false

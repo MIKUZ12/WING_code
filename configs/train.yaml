@@ -1,0 +1,71 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - data: null
+  - model: null
+  - task: null
+
+
+output_dir: ./runs/train/${now:%Y-%m-%d}_${now:%H-%M-%S}
+
+# dataloading
+batch_size: 2
+num_workers: 4
+
+# scheduler
+lr_scheduler_type: "cosine"
+learning_rate: 1.0e-4
+# Optional optimizer groups. Defaults preserve the historical single LR.
+backbone_learning_rate: ${learning_rate}
+new_module_learning_rate: ${learning_rate}
+num_epochs: 1
+max_steps: null
+log_every: 10
+save_every: 100
+# Number of complete weights+state checkpoint pairs to retain. 0 disables pruning.
+checkpoint_keep_last: 0
+# Optional independent full-state retention. null preserves paired legacy pruning;
+# when set, checkpoint_keep_last counts weights and this counts resumable states.
+checkpoint_state_keep_last: null
+eval_every: 50
+eval_num_inference_steps: 10
+
+# training
+gradient_accumulation_steps: 1
+mixed_precision: "bf16" # one of: [no, fp16, bf16]
+seed: 42
+override_instruction: null
+max_grad_norm: 1.0
+weight_decay: 0.0
+# one of: [auto, torch_adamw, fused_adam]
+optimizer_type: auto
+training_phase: policy
+resume: null
+resume_allow_incomplete_state: false
+partial_resume: null
+phase_init: null
+
+# wandb
+wandb:
+  enabled: false
+  workspace: null
+  project: wing-real
+  name: null
+  group: null
+  mode: online
+
+# Optional local scalar logging. Phase-I release launchers enable this explicitly.
+tensorboard:
+  enabled: false
+  log_dir: ${output_dir}/tensorboard
+  flush_secs: 30
+
+hydra:
+  job:
+    chdir: false
+  run:
+    # Keep Hydra's `${hydra.job.name}.log` beside the run artifacts instead of
+    # leaking train.log/precompute_*.log files into the repository root.
+    dir: ${output_dir}
+  output_subdir: null

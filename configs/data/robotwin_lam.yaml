@@ -1,0 +1,72 @@
+train:
+  _target_: wing.datasets.spectral_targets.SpectralTargetDataset
+  cache_root: ${oc.env:ROBOTWIN_LAM_CACHE,datasets/robotwin/latent_gap4_h8}
+  horizon: 8
+  target_dim: 32
+  max_cached_episodes: 32
+  require_complete_cache: true
+  verify_manifest_identity: false
+  selected_dataset_roots: ${oc.decode:${oc.env:ROBOTWIN_DATASET_DIRS}}
+  episode_split: all
+  episode_holdout_mod: 100
+  episode_holdout_remainder: 0
+  base_dataset:
+    _target_: wing.datasets.lerobot.robot_video_dataset.RobotVideoDataset
+    dataset_dirs: ${oc.decode:${oc.env:ROBOTWIN_DATASET_DIRS}}
+    shape_meta:
+      images:
+        - key: cam_high
+          raw_shape: [3, 480, 640]
+          shape: [3, 240, 320]
+        - key: cam_left_wrist
+          raw_shape: [3, 480, 640]
+          shape: [3, 240, 320]
+        - key: cam_right_wrist
+          raw_shape: [3, 480, 640]
+          shape: [3, 240, 320]
+      action:
+        - key: default
+          raw_shape: 14
+          shape: 14
+      state:
+        - key: default
+          raw_shape: 14
+          shape: 14
+    num_frames: 33
+    global_sample_stride: 1
+    action_video_freq_ratio: 4
+    video_size: [384, 320]
+    camera_key: null
+    val_set_proportion: 0.0
+    is_training_set: true
+    pretrained_norm_stats: ${oc.env:ROBOTWIN_DATASET_STATS,datasets/robotwin/dataset_stats.json}
+    skip_padding_as_possible: false
+    concat_multi_camera: robotwin
+    override_instruction: ${override_instruction}
+    vae_latent_cache_dir: ${oc.env:ROBOTWIN_VAE_CACHE,''}
+    vae_latent_cache_required: false
+    processor:
+      _target_: wing.datasets.lerobot.processors.wing_processor.WINGProcessor
+      shape_meta: ${data.train.base_dataset.shape_meta}
+      num_obs_steps: ${data.train.base_dataset.num_frames}
+      num_output_cameras: 3
+      action_output_dim: 14
+      proprio_output_dim: 14
+      action_state_transforms: null
+      use_stepwise_action_norm: false
+      norm_default_mode: z-score
+      norm_exception_mode: null
+      action_state_merger:
+        _target_: wing.datasets.lerobot.transforms.action_state_merger.ConcatLeftAlign
+      train_transforms:
+        - _target_: wing.datasets.lerobot.transforms.image.ToTensor
+        - _target_: torchvision.transforms.Resize
+          size: [240, 320]
+      val_transforms:
+        - _target_: wing.datasets.lerobot.transforms.image.ToTensor
+        - _target_: torchvision.transforms.Resize
+          size: [240, 320]
+    text_embedding_cache_dir: ${oc.env:ROBOTWIN_TEXT_CACHE,datasets/robotwin/text_embeds_cache}
+    context_len: 128
+
+val: null

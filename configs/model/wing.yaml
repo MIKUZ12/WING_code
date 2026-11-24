@@ -1,0 +1,31 @@
+# Fixed Full-K4 latent-action conditioning. K0-K3 are always predicted and routed;
+# the model has no frequency selector or frequency-budget objective.
+defaults:
+  - wing_joint
+  - _self_
+
+loss:
+  lambda_video: 1.0
+  lambda_action: 1.0
+
+spectral_plan:
+  enabled: true
+  training_mode: joint
+  detach_backbone: true
+  routing_mode: fixed
+  horizon: 8
+  latent_dim: 32
+  low_frequencies: 4
+  normalization_stats_path: ${oc.env:SPECTRAL_STATS_PATH,datasets/libero/libero_v2.1/latent_low_4suite_dct_k4_stats.pt}
+  plan_dim: 1024
+  plan_heads: 8
+  plan_depth: 1
+  adapter_layers: [9, 19]
+  adapter_init_scale: 0.05
+  lambda_plan: 0.1
+
+proprio_dim: ${data.train.base_dataset.processor.proprio_output_dim}
+video_dit_config:
+  action_dim: ${data.train.base_dataset.processor.action_output_dim}
+action_dit_config:
+  action_dim: ${data.train.base_dataset.processor.action_output_dim}

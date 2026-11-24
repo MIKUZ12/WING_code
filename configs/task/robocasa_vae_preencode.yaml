@@ -1,0 +1,13 @@
+# @package _global_
+defaults:
+  - override /data: robocasa
+  - override /model: wing_joint
+  - _self_
+
+override_instruction: null
+model:
+  redirect_common_files: false
+wandb:
+  enabled: false
+tensorboard:
+  enabled: false

@@ -1,0 +1,74 @@
+defaults:
+  - robocasa_common
+  - _self_
+
+train:
+  _target_: wing.datasets.spectral_targets.SpectralTargetDataset
+  cache_root: ${oc.env:ROBOCASA_LAM_CACHE,artifacts/robocasa/latent_gap4_h8}
+  horizon: 8
+  target_dim: 32
+  max_cached_episodes: 32
+  require_complete_cache: true
+  verify_manifest_identity: false
+  selected_dataset_roots: ${data.dataset_dirs}
+  episode_split: all
+  episode_holdout_mod: 100
+  episode_holdout_remainder: 0
+  # Keep this node explicit: Hydra recursively instantiates nested target
+  # mappings, but not a whole mapping reached through an interpolation node.
+  base_dataset:
+    _target_: wing.datasets.lerobot.robot_video_dataset.RobotVideoDataset
+    dataset_dirs: ${data.dataset_dirs}
+    pretrained_norm_stats: ${oc.env:ROBOCASA_DATASET_STATS,artifacts/robocasa/dataset_stats.json}
+    shape_meta:
+      images:
+        - key: ego_view
+          raw_shape: [3, 256, 256]
+          shape: [3, 256, 256]
+      action:
+        - key: default
+          raw_shape: 44
+          shape: 44
+      state:
+        - key: default
+          raw_shape: 44
+          shape: 44
+    num_frames: 33
+    global_sample_stride: 1
+    action_video_freq_ratio: 4
+    video_size: [256, 256]
+    camera_key: null
+    val_set_proportion: 0.0
+    is_training_set: true
+    skip_padding_as_possible: false
+    concat_multi_camera: null
+    validate_episode_files: false
+    load_all_episodes_from_data_dir: true
+    override_instruction: null
+    processor:
+      _target_: wing.datasets.lerobot.processors.wing_processor.WINGProcessor
+      shape_meta: ${data.train.base_dataset.shape_meta}
+      num_obs_steps: ${data.train.base_dataset.num_frames}
+      num_output_cameras: 1
+      action_output_dim: 44
+      proprio_output_dim: 44
+      action_state_transforms: null
+      use_stepwise_action_norm: false
+      norm_default_mode: z-score
+      norm_exception_mode: null
+      action_state_merger:
+        _target_: wing.datasets.lerobot.transforms.action_state_merger.ConcatLeftAlign
+      train_transforms:
+        - _target_: wing.datasets.lerobot.transforms.image.ToTensor
+        - _target_: torchvision.transforms.Resize
+          size: [256, 256]
+      val_transforms:
+        - _target_: wing.datasets.lerobot.transforms.image.ToTensor
+        - _target_: torchvision.transforms.Resize
+          size: [256, 256]
+    text_embedding_cache_dir: ${oc.env:ROBOCASA_TEXT_CACHE,artifacts/robocasa/text_embeds_cache}
+    context_len: 128
+    vae_latent_cache_dir: ${oc.env:ROBOCASA_VAE_CACHE,''}
+    vae_latent_cache_required: false
+
+val: null

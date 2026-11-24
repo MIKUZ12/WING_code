@@ -1,0 +1,48 @@
+# @package _global_
+
+defaults:
+  - train
+  - override /task: robotwin
+  - _self_
+
+ckpt: null
+
+model:
+  load_text_encoder: true
+  skip_dit_load_from_pretrain: true
+  action_dit_pretrained_path: null
+
+EVALUATION:
+  robotwin_root: ${oc.env:ROBOTWIN_ROOT,third_party/RoboTwin}
+  dataset_stats_path: null
+  output_dir: ./evaluate_results/robotwin/${hydra:runtime.choices.task}/${now:%Y%m%d_%H%M%S}
+  instruction_type: unseen
+  eval_num_episodes: 100
+  skip_get_obs_within_replan: true
+  wing_overrides: []
+
+  action_horizon: null
+  replan_steps: 24
+  num_inference_steps: ${eval_num_inference_steps}
+  sigma_shift: null
+  text_cfg_scale: 1.0
+  negative_prompt: ""
+  rand_device: cpu
+  tiled: false
+
+MULTIRUN:
+  create_only: false
+  # Empty means every task having both env code and an instruction JSON.
+  task_names: []
+  task_configs: [demo_randomized]
+  seeds: [0]
+  gpu_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+  max_tasks_per_gpu: 1
+  python_bin: ${oc.env:ROBOTWIN_PYTHON,python}
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: .
+  output_subdir: null

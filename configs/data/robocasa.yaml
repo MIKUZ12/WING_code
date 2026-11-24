@@ -1,0 +1,6 @@
+defaults:
+  - robocasa_common
+  - _self_
+
+train: ${data.robot_dataset}
+val: null

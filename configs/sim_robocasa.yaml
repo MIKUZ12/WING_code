@@ -1,0 +1,17 @@
+wing:
+  ckpt: ${oc.env:ROBOCASA_EVAL_CKPT}
+  dataset_stats: ${oc.env:ROBOCASA_DATASET_STATS}
+  task: robocasa
+  config_dir: ${oc.env:WING_CONFIG_DIR,.}
+  train_config: ${oc.env:ROBOCASA_TRAIN_CONFIG}
+  device: cuda:0
+  mixed_precision: bf16
+  prompt: "unlocked_waist: pick up the bottled water, place it into the cabinet and close the cabinet"
+  context_cache_dir: ${oc.env:ROBOCASA_TEXT_CACHE,../artifacts/robocasa/text_embeds_cache}
+  use_text_encoder: false
+  action_horizon: 32
+  num_inference_steps: 10
+  seed: 42
+  rand_device: cpu
+  keep_dims: null
+  full_action_pad: null

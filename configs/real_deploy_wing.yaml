@@ -1,0 +1,64 @@
+# WING policy server and Piper robot runtime configuration.
+# Replace every null robot value with site-calibrated hardware settings before use.
+
+wing:
+  ckpt: ${oc.env:WING_CHECKPOINT,''}
+  dataset_stats: ${oc.env:WING_DATASET_STATS,''}
+  task: libero
+  config_dir: .
+  train_config: ${oc.env:WING_TRAIN_CONFIG,''}
+  device: ${oc.env:WING_DEVICE,cuda:0}
+  mixed_precision: bf16
+  prompt: ${oc.env:WING_TASK_PROMPT,''}
+  context_cache_dir: ${oc.env:WING_TEXT_CACHE,''}
+  use_text_encoder: false
+  action_horizon: 32
+  num_inference_steps: 10
+  seed: 42
+  rand_device: cpu
+  keep_dims: null
+  full_action_pad: null
+
+policy_server:
+  host: ${oc.env:WING_POLICY_HOST,''}
+  port: ${oc.env:WING_POLICY_PORT,''}
+  authkey: ${oc.env:WING_POLICY_AUTHKEY,''}
+
+runtime:
+  arm_mode: dual
+  action_chunk_size: 32
+  exp_weight_factor: 0.5
+  rtc_debug: false
+  rospy_rate: 50
+  execute_actions: false
+  no_robot: false
+  move_to_initial: false
+  max_steps: null
+
+robot:
+  left_channel: null
+  right_channel: null
+  bitrate: 1000000
+  speed_pct: 15
+  max_linear_vel: 0.5
+  max_angular_vel: 0.1
+  max_linear_acc: 0.1
+  max_angular_acc: 0.05
+  action_safety_threshold: 1.5
+  state_safety_threshold: 0.3
+  left_init_position: null
+  right_init_position: null
+
+cameras:
+  use_front: true
+  use_wrist: true
+  use_left_wrist: true
+  use_right_wrist: true
+  front_camera_name: cam_high
+  left_wrist_camera_name: cam_left_wrist
+  right_wrist_camera_name: cam_right_wrist
+
+ros_topics_dual:
+  img_front_topic: null
+  img_left_topic: null
+  img_right_topic: null
