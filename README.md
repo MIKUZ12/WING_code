@@ -56,10 +56,6 @@ motion from interaction motion using geometric routing, then distills the
 interaction representation into an RGB-only student. The student extracts
 latent actions from frame pairs without requiring trackers or hand masks.
 
-<p align="center">
-  <img src="docs/assets/wing-lam.png" width="100%" alt="WING-LAM architecture: geometric routing separates interaction and background tracks into two latent branches, then distills interaction latents into an RGB-only model.">
-</p>
-
 **2. Transfer shared temporal structure.** A temporal discrete cosine transform
 (DCT) turns latent trajectories into spectral targets. The released policy uses
 **Full-K4 spectral guidance**: an eight-step, 32-dimensional latent trajectory,
