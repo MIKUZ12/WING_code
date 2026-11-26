@@ -1,46 +1,113 @@
-# WING: World Action Learning via INteraction-Centric Spectral Latent Guidance
+<div align="center">
 
-[Project page](https://mikuz12.github.io/wing/) · [Paper](https://arxiv.org/abs/2610.03607) · [Checkpoints](#checkpoints) · [Installation](docs/installation.md) · [Citation](#citation)
+<h1>WING: World Action Learning via<br>INteraction-Centric Spectral Latent Guidance</h1>
 
-WING transfers interaction knowledge from human videos to robot policies.
-WING-LAM separates camera and interaction motion, then distills interaction
-latents into an RGB-only student. The policy predicts low-frequency temporal
-DCT coefficients from current observations, language, and robot state, and uses
-them to guide action generation.
+<p><b>From human experience to robot intelligence.</b></p>
 
-The released policy uses **Full-K4 spectral guidance**: an eight-step,
-32-dimensional latent trajectory, with all four coefficients K0–K3 retained.
+<p>
+  Zhiming Liu<sup>†</sup>, Yikun Miao<sup>†</sup>, Ying Chen<sup>†</sup>, Hongrui Yin, Fangqi Zhu,<br>
+  Xiaoyi Pang, Quanxin Shou, Zhengyang Yan, Haodong Wang, Song Guo<sup>*</sup>
+</p>
 
-## Release status
+<p>The Hong Kong University of Science and Technology<br>
+<sup>†</sup> Equal contribution &nbsp; <sup>*</sup> Corresponding author</p>
 
-This repository includes WING-LAM training and data preparation, robot-policy
+<p>
+  <a href="https://mikuz12.github.io/wing/"><img src="https://img.shields.io/badge/Project_Page-0F766E?style=for-the-badge&amp;logo=googlechrome&amp;logoColor=white" alt="Project page"></a>
+  <a href="https://arxiv.org/abs/2610.03607"><img src="https://img.shields.io/badge/arXiv-2610.03607-B31B1B?style=for-the-badge&amp;logo=arxiv&amp;logoColor=white" alt="Paper on arXiv"></a>
+  <a href="#checkpoints"><img src="https://img.shields.io/badge/Checkpoints-Pending-FCD022?style=for-the-badge&amp;logo=huggingface&amp;logoColor=black" alt="Checkpoints — publication pending"></a>
+  <a href="#documentation"><img src="https://img.shields.io/badge/Documentation-475569?style=for-the-badge&amp;logo=readthedocs&amp;logoColor=white" alt="Documentation"></a>
+</p>
+
+<p>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10 or newer"></a>
+  <a href="https://pytorch.org/"><img src="https://img.shields.io/badge/PyTorch-2.7.1-EE4C2C?logo=pytorch&amp;logoColor=white" alt="PyTorch 2.7.1"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-2563EB" alt="License: MIT"></a>
+</p>
+
+<p>
+  <a href="#overview">Overview</a> ·
+  <a href="#method">Method</a> ·
+  <a href="#results">Results</a> ·
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#checkpoints">Checkpoints</a> ·
+  <a href="#citation">Citation</a>
+</p>
+
+</div>
+
+## Overview
+
+**WING** transfers interaction knowledge from human videos to robot policies
+through **interaction-centric latent actions** and **spectral latent guidance**.
+This repository contains WING-LAM training and data preparation, robot-policy
 training and evaluation for **LIBERO, RoboTwin 2.0, and RoboCasa–GR1**, and
-real-robot deployment. Simulator packages, datasets, and pretrained weights are
-external inputs.
+real-robot deployment.
 
-**Checkpoint download entries below are placeholders.** Stage-II policy training
-requires a Stage-I planner checkpoint. The Stage-I human-video training recipe
-and dataset are not included. End-to-end reproduction depends on obtaining the
-listed assets; installing the code alone does not provide them.
+<p align="center">
+  <a href="https://mikuz12.github.io/wing/#method"><img src="docs/assets/wing-architecture.png" width="100%" alt="WING architecture: a video model and a guidance predictor use the current context; WING-LAM supplies spectral training targets, and predicted guidance conditions the action model."></a>
+</p>
+<p align="center"><em>WING learns interaction representations from human videos and predicts spectral guidance to generate robot action chunks.</em></p>
 
-## Results reported in the paper
+## Method
+
+**1. Learn interaction-centric latent actions.** WING-LAM separates camera
+motion from interaction motion using geometric routing, then distills the
+interaction representation into an RGB-only student. The student extracts
+latent actions from frame pairs without requiring trackers or hand masks.
+
+<p align="center">
+  <img src="docs/assets/wing-lam.png" width="100%" alt="WING-LAM architecture: geometric routing separates interaction and background tracks into two latent branches, then distills interaction latents into an RGB-only model.">
+</p>
+
+**2. Transfer shared temporal structure.** A temporal discrete cosine transform
+(DCT) turns latent trajectories into spectral targets. The released policy uses
+**Full-K4 spectral guidance**: an eight-step, 32-dimensional latent trajectory,
+retaining the four low-frequency coefficients K0–K3.
+
+**3. Guide robot action generation.** At inference, the policy predicts the
+spectral coefficients from current observations, language, and robot state,
+then uses them to guide action generation. Future frames are used to construct
+training targets; they are not needed at inference.
+
+See the [project page](https://mikuz12.github.io/wing/#method) for the method
+animation and the [WING-LAM guide](docs/lam.md) for training and distillation.
+
+## Results
+
+Average success rates reported in the paper:
 
 | Benchmark | Setting | Average success |
 | --- | --- | --- |
-| LIBERO | Four-suite average | 99.20% |
-| RoboTwin 2.0 | Clean and randomized average | 93.80% |
-| RoboCasa–GR1 | 24-task tabletop average | 57.7% |
+| **LIBERO** | Four-suite average | **99.20%** |
+| **RoboTwin 2.0** | Clean and randomized average | **93.80%** |
+| **RoboCasa–GR1** | 24-task tabletop average | **57.7%** |
 
 These are paper results, not measurements from the environment checks in this
 repository. See the [project page](https://mikuz12.github.io/wing/) for comparisons
 and videos. Released checkpoint-to-result mappings are pending.
 
-## Quick start
+## Release Status
+
+- [x] WING-LAM teacher training, RGB student distillation, and data preparation
+- [x] Robot-policy training and evaluation for LIBERO, RoboTwin 2.0, and RoboCasa–GR1
+- [x] Real-robot deployment code and documentation
+- [ ] Public checkpoint download links and checkpoint-to-result mappings
+
+> **Weights and data:** Checkpoint links are currently publication placeholders.
+> Stage-II training requires a Stage-I planner checkpoint; the Stage-I
+> human-video training recipe and dataset are not included. Simulators,
+> datasets, and pretrained weights must be obtained separately.
+
+## Quick Start
 
 Run commands from the repository root on Linux. The following creates the policy
 environment; simulator and robot environments are configured separately.
 
 ```bash
+git clone https://github.com/MIKUZ12/WING_code.git
+cd WING_code
+
 conda env create -f environment.yml
 conda activate wing
 python -m pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
@@ -51,7 +118,12 @@ python scripts/check_environment.py --video
 
 The last command checks imports, the Full-K4 forward/backward path, and CPU video
 decoding without downloading weights. A successful check ends with
-`Environment check passed.` Check the training/GPU environment separately:
+`Environment check passed.`
+
+<details>
+<summary><b>GPU environment checks and installation alternatives</b></summary>
+
+Check the training/GPU environment separately:
 
 ```bash
 python scripts/check_environment.py --training --video --require-cuda
@@ -61,6 +133,10 @@ Follow [installation and troubleshooting](docs/installation.md) for a `venv`
 alternative, CUDA/compiler requirements, and model-cache setup. See
 [tested environment and resource planning](docs/environment.md) for the scope of
 verification and the distributed training settings.
+
+</details>
+
+### Prepare assets and train
 
 Once checkpoints and data are available:
 
@@ -115,7 +191,7 @@ See [asset layout and loading requirements](docs/checkpoints.md).
 | [WING-LAM](docs/lam.md) | Tracks/masks, teacher training, RGB distillation |
 | [Real robots](docs/real_robot.md) | Policy server, ROS/Piper integration, motion checks |
 
-## Feedback and contributions
+## Feedback and Contributions
 
 Use the repository's Issues tab for bugs and reproduction questions. Include
 the command, task/config overrides, package versions, and relevant traceback.
